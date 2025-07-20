@@ -31,15 +31,25 @@ public class SortListener implements Listener {
                 return;
             }
             
-            // Check if clicking in hotbar slots (0-8) - sort hotbar instead
+            // Check if clicking in hotbar slots (0-8) - sort hotbar or combined
             if (clickedInventory.getType() == InventoryType.PLAYER && 
-                event.getSlot() >= 0 && event.getSlot() <= 8 &&
-                player.hasPermission("inventorywizard.hotbar")) {
+                event.getSlot() >= 0 && event.getSlot() <= 8) {
                 
                 event.setCancelled(true);
-                InventorySorter.sortHotbar(player);
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
-                player.sendMessage("§6✨ Hotbar organized by the InventoryWizard!");
+                
+                // Check for combined sorting permission first
+                if (player.hasPermission("inventorywizard.all")) {
+                    InventorySorter.sortPlayerInventory(player);
+                    InventorySorter.sortHotbar(player);
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+                    player.sendMessage("§b🧙‍♂️ Complete inventory enchanted by the InventoryWizard!");
+                }
+                // Fall back to hotbar-only sorting
+                else if (player.hasPermission("inventorywizard.hotbar")) {
+                    InventorySorter.sortHotbar(player);
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
+                    player.sendMessage("§6✨ Hotbar organized by the InventoryWizard!");
+                }
                 return;
             }
             
@@ -55,8 +65,9 @@ public class SortListener implements Listener {
                 player.sendMessage("§a✨ Chest magically sorted!");
                 
             } 
-            // Check if it's player inventory (main inventory slots)
+            // Check if it's player inventory (main inventory slots, excluding hotbar)
             else if (clickedInventory.getType() == InventoryType.PLAYER && 
+                     event.getSlot() > 8 && event.getSlot() < 36 &&
                      player.hasPermission("inventorywizard.inventory")) {
                 
                 InventorySorter.sortPlayerInventory(player);
@@ -85,24 +96,6 @@ public class SortListener implements Listener {
             }
         }
         
-        // Handle Middle Click for combined sorting (inventory + hotbar)
-        else if (event.getClick() == ClickType.MIDDLE) {
-            
-            if (!player.hasPermission("inventorywizard.all")) {
-                return;
-            }
-            
-            // Cancel the event
-            event.setCancelled(true);
-            
-            Inventory clickedInventory = event.getClickedInventory();
-            
-            if (clickedInventory != null && clickedInventory.getType() == InventoryType.PLAYER) {
-                InventorySorter.sortPlayerInventory(player);
-                InventorySorter.sortHotbar(player);
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                player.sendMessage("§b🧙‍♂️ Complete inventory enchanted by the InventoryWizard!");
-            }
-        }
+
     }
 }

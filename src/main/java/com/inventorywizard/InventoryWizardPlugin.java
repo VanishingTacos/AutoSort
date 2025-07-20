@@ -21,7 +21,7 @@ public class InventoryWizardPlugin extends JavaPlugin {
         getLogger().info("Commands: /iwiz [hotbar|inventory|all]");
         getLogger().info("Hotbar: Shift+Right-click in hotbar OR Double-click in hotbar");
         getLogger().info("Inventory: Shift+Right-click in main inventory");
-        getLogger().info("Both: Middle-click anywhere in inventory");
+        getLogger().info("Both: Shift+Right-click in hotbar (with all permission)");
         getLogger().info("Cast your sorting spells wisely! 🧙‍♂️");
     }
     

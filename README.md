@@ -17,9 +17,8 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 - **Metadata preservation** - Maintains enchantments, names, and item data
 
 ### 🖱️ **Multiple Control Methods**
-- **Shift+Right Click** - Sort inventories and chests
+- **Shift+Right Click** - Sort inventories, chests, and hotbar
 - **Double Click** - Alternative hotbar sorting
-- **Middle Click** - Sort everything at once
 - **Commands** - `/iwiz` for programmatic sorting
 
 ### 🎒 **Comprehensive Coverage**
@@ -42,13 +41,22 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 
 ## 🎮 Usage Guide
 
+### **Control Scheme Overview**
+| Action | Location | Permission Required | Result |
+|--------|----------|-------------------|---------|
+| **Shift+Right Click** | Hotbar (slots 0-8) | `inventorywizard.all` | Sort inventory + hotbar |
+| **Shift+Right Click** | Hotbar (slots 0-8) | `inventorywizard.hotbar` | Sort hotbar only |
+| **Shift+Right Click** | Main Inventory (slots 9-35) | `inventorywizard.inventory` | Sort main inventory |
+| **Shift+Right Click** | Chest | `inventorywizard.chest` | Sort chest contents |
+| **Double Click** | Hotbar (slots 0-8) | `inventorywizard.hotbar` | Sort hotbar only |
+
 ### **Sorting Your Inventory**
 - Open your inventory (`E`)
-- **Shift+Right Click** any slot in your main inventory area
+- **Shift+Right Click** any slot in your main inventory area (slots 9-35)
 - Watch the magic happen! ✨
 
 ### **Sorting Your Hotbar** 
-- **Method 1**: **Shift+Right Click** any hotbar slot (0-8)
+- **Method 1**: **Shift+Right Click** any hotbar slot (0-8) with `inventorywizard.hotbar` permission
 - **Method 2**: **Double Click** any hotbar slot
 - **Method 3**: Use command `/iwiz hotbar`
 
@@ -58,7 +66,7 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 - The entire chest will be organized!
 
 ### **Sorting Everything**
-- **Middle Click** anywhere in your player inventory
+- **Shift+Right Click** in your hotbar (slots 0-8) with `inventorywizard.all` permission
 - Both your inventory and hotbar will be sorted!
 
 ## 🧙‍♂️ Commands
@@ -185,6 +193,12 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 5. **Submit** a pull request
 
 ## 📜 Changelog
+
+### Version 1.0.1
+- 🔧 **Fixed control scheme** - Removed middle click, improved Shift+Right Click logic
+- 🎯 **Enhanced hotbar sorting** - Priority-based permission system for combined sorting
+- 🛠️ **Code optimization** - Eliminated duplicate event handlers and improved reliability
+- 📝 **Updated documentation** - Clearer instructions and permission requirements
 
 ### Version 1.0.0
 - ✨ Initial release
