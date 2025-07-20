@@ -172,7 +172,7 @@ mvn clean package
 ### Development Requirements
 - Java 17+
 - Maven 3.6+
-- PaperMC API 1.21.4
+- PaperMC API 1.21.4+
 
 ## 🤝 Contributing
 
