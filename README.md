@@ -184,12 +184,6 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 4. **Push** to the branch: `git push origin feature-name`
 5. **Submit** a pull request
 
-## 🐛 Bug Reports & Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourname/inventorywizard/issues)
-- **Discord**: [Join our server](https://discord.gg/yourserver)
-- **Documentation**: [Wiki](https://github.com/yourname/inventorywizard/wiki)
-
 ## 📜 Changelog
 
 ### Version 1.0.0
