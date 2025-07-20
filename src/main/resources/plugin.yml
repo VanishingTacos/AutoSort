@@ -1,0 +1,31 @@
+name: InventoryWizard
+version: 1.0.0
+main: com.inventorywizard.InventoryWizardPlugin
+api-version: "1.21"
+description: Magically sort chests and inventories with intuitive clicks
+author: VanishingTacos
+website: https://github.com/VanishingTacos/InventoryWizard
+
+permissions:
+  inventorywizard.use:
+    description: Allows using the inventory wizard features
+    default: true
+  inventorywizard.chest:
+    description: Allows sorting chests
+    default: true
+  inventorywizard.inventory:
+    description: Allows sorting player inventory
+    default: true
+  inventorywizard.hotbar:
+    description: Allows sorting hotbar
+    default: true
+  inventorywizard.all:
+    description: Allows sorting everything at once
+    default: true
+
+commands:
+  iwiz:
+    description: Access InventoryWizard sorting commands
+    usage: /iwiz [hotbar|inventory|all]
+    permission: inventorywizard.inventory
+    aliases: [inventorywizard, sort]
