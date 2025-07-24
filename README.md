@@ -221,6 +221,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## ☕ Support InventoryWizard
+
+If you enjoy using InventoryWizard and want to support its development, you can buy me a coffee!
+
+<a href="https://buymeacoffee.com/vanishingtacos" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="150" >
+</a>
+
+
 **Made with** ❤️ **and** ✨ **for the Minecraft community**
 
 *Transform your chaotic inventory into organized perfection with InventoryWizard!* 🧙‍♂️
