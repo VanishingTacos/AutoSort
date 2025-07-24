@@ -14,6 +14,7 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 - **Smart categorization** - Items are grouped logically (weapons, tools, food, blocks, etc.)
 - **Hotbar optimization** - Weapons and tools prioritized for PvP/survival gameplay
 - **Stack consolidation** - Automatically combines partial stacks
+- **Configurable partial stack sorting** - Choose whether to sort only full stacks or include partial stacks (see config)
 - **Metadata preservation** - Maintains enchantments, names, and item data
 
 ### 🖱️ **Multiple Control Methods**
@@ -128,6 +129,11 @@ features:
   inventory-sorting: true
   hotbar-sorting: true
   show-messages: true
+  
+  # Allow sorting of partial stacks in chests (set false to only sort full stacks)
+  allow-partial-stacks-chest: true
+  # Allow sorting of partial stacks in player inventory (set false to only sort full stacks)
+  allow-partial-stacks-inventory: true
 
 # Hotbar sorting priorities (optimized for PvP/survival)
 hotbar-priorities:
@@ -138,6 +144,11 @@ hotbar-priorities:
   utility-items: 500  # Ender pearls, buckets, torches
   other: 999          # Everything else
 ```
+
+#### Partial Stack Sorting Behavior
+- `allow-partial-stacks-chest` and `allow-partial-stacks-inventory` control whether partial stacks are included in sorting for chests and player inventory, respectively.
+- **If set to `true`**: All items, including partial stacks, are sorted and consolidated as much as possible.
+- **If set to `false`**: Only full stacks are sorted. Any leftover partial stacks are left unsorted at the end of the inventory or chest.
 
 ## 📋 Sorting Categories
 
@@ -193,6 +204,9 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 5. **Submit** a pull request
 
 ## 📜 Changelog
+
+### Version 1.0.2
+- ✨ **Configurable partial stack sorting** - Added `allow-partial-stacks-chest` and `allow-partial-stacks-inventory` config options. When set to false, only full stacks are sorted and any leftover partial stacks are left unsorted at the end.
 
 ### Version 1.0.1
 - 🔧 **Fixed control scheme** - Removed middle click, improved Shift+Right Click logic
