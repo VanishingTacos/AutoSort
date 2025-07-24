@@ -39,7 +39,7 @@ public class SortListener implements Listener {
                 
                 // Check for combined sorting permission first
                 if (player.hasPermission("inventorywizard.all")) {
-                    InventorySorter.sortPlayerInventory(player);
+                    InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
                     InventorySorter.sortHotbar(player);
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                     player.sendMessage("§b🧙‍♂️ Complete inventory enchanted by the InventoryWizard!");
@@ -59,18 +59,15 @@ public class SortListener implements Listener {
             // Check if it's a chest inventory
             if (clickedInventory.getType() == InventoryType.CHEST && 
                 player.hasPermission("inventorywizard.chest")) {
-                
-                InventorySorter.sortInventory(clickedInventory);
+                InventorySorter.sortInventory(clickedInventory, InventoryWizardPlugin.allowPartialStacksChest);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
                 player.sendMessage("§a✨ Chest magically sorted!");
-                
             } 
             // Check if it's player inventory (main inventory slots, excluding hotbar)
             else if (clickedInventory.getType() == InventoryType.PLAYER && 
                      event.getSlot() > 8 && event.getSlot() < 36 &&
                      player.hasPermission("inventorywizard.inventory")) {
-                
-                InventorySorter.sortPlayerInventory(player);
+                InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
                 player.sendMessage("§a✨ Inventory organized with wizard magic!");
             }

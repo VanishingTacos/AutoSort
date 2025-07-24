@@ -46,7 +46,7 @@ public class SortCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage("§c🧙‍♂️ Your magical privileges are insufficient for inventory sorting!");
                     return true;
                 }
-                InventorySorter.sortPlayerInventory(player);
+                InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
                 player.sendMessage("§a✨ Inventory magically organized!");
                 break;
@@ -57,7 +57,7 @@ public class SortCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage("§c🧙‍♂️ You need master-level permissions for complete inventory wizardry!");
                     return true;
                 }
-                InventorySorter.sortPlayerInventory(player);
+                InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
                 InventorySorter.sortHotbar(player);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 player.sendMessage("§b🧙‍♂️ Complete inventory transformation complete!");

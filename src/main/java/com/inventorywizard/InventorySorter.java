@@ -10,7 +10,7 @@ import java.util.*;
 
 public class InventorySorter {
     
-    public static void sortInventory(Inventory inventory) {
+    public static void sortInventory(Inventory inventory, boolean allowPartialStacks) {
         List<ItemStack> items = new ArrayList<>();
         
         // Collect all items from the inventory
@@ -26,7 +26,7 @@ public class InventorySorter {
         
         // Sort and stack items
         Map<String, List<ItemStack>> groupedItems = groupItems(items);
-        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, false);
+        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, false, allowPartialStacks);
         
         // Put items back into inventory
         for (int i = 0; i < sortedItems.size() && i < inventory.getSize(); i++) {
@@ -34,7 +34,7 @@ public class InventorySorter {
         }
     }
     
-    public static void sortPlayerInventory(Player player) {
+    public static void sortPlayerInventory(Player player, boolean allowPartialStacks) {
         PlayerInventory inventory = player.getInventory();
         List<ItemStack> items = new ArrayList<>();
         
@@ -53,7 +53,7 @@ public class InventorySorter {
         
         // Sort and stack items
         Map<String, List<ItemStack>> groupedItems = groupItems(items);
-        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, false);
+        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, false, allowPartialStacks);
         
         // Put items back into main inventory
         int slot = 9;
@@ -83,7 +83,7 @@ public class InventorySorter {
         
         // Sort and stack items with hotbar priority
         Map<String, List<ItemStack>> groupedItems = groupItems(items);
-        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, true);
+        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, true, true); // always allow partial stacks in hotbar
         
         // Put items back into hotbar
         for (int i = 0; i < Math.min(sortedItems.size(), 9); i++) {
@@ -117,9 +117,9 @@ public class InventorySorter {
         return key.toString();
     }
     
-    private static List<ItemStack> stackAndSortByType(Map<String, List<ItemStack>> groupedItems, boolean isHotbar) {
+    private static List<ItemStack> stackAndSortByType(Map<String, List<ItemStack>> groupedItems, boolean isHotbar, boolean allowPartialStacks) {
         List<ItemStack> result = new ArrayList<>();
-        
+        List<ItemStack> leftovers = new ArrayList<>();
         // Create a list of item templates for sorting
         List<ItemStack> templates = new ArrayList<>();
         for (List<ItemStack> itemGroup : groupedItems.values()) {
@@ -127,48 +127,55 @@ public class InventorySorter {
                 templates.add(itemGroup.get(0));
             }
         }
-        
         // Sort templates by material type priority
         templates.sort((item1, item2) -> {
             int priority1 = isHotbar ? getHotbarPriority(item1.getType()) : getMaterialPriority(item1.getType());
             int priority2 = isHotbar ? getHotbarPriority(item2.getType()) : getMaterialPriority(item2.getType());
-            
             if (priority1 != priority2) {
                 return Integer.compare(priority1, priority2);
             }
-            
             // Within same category, sort alphabetically
             return item1.getType().name().compareToIgnoreCase(item2.getType().name());
         });
-        
         // Process each sorted template
         for (ItemStack template : templates) {
             String key = createItemKey(template);
             List<ItemStack> itemGroup = groupedItems.get(key);
-            
             // Calculate total amount
             int totalAmount = itemGroup.stream().mapToInt(ItemStack::getAmount).sum();
-            
+            int maxStackSize = template.getMaxStackSize();
+            // Create full stacks
+            while (totalAmount >= maxStackSize) {
+                ItemStack fullStack = template.clone();
+                fullStack.setAmount(maxStackSize);
+                result.add(fullStack);
+                totalAmount -= maxStackSize;
+            }
+            // Handle leftovers
             if (totalAmount > 0) {
-                int maxStackSize = template.getMaxStackSize();
-                
-                // Create full stacks
-                while (totalAmount > maxStackSize) {
-                    ItemStack fullStack = template.clone();
-                    fullStack.setAmount(maxStackSize);
-                    result.add(fullStack);
-                    totalAmount -= maxStackSize;
-                }
-                
-                // Create remaining stack
-                if (totalAmount > 0) {
+                if (allowPartialStacks) {
                     ItemStack remainingStack = template.clone();
                     remainingStack.setAmount(totalAmount);
                     result.add(remainingStack);
+                } else {
+                    // Add all original partial stacks to leftovers (preserve original stack sizes)
+                    int left = totalAmount;
+                    for (ItemStack stack : itemGroup) {
+                        if (stack.getAmount() < maxStackSize && left > 0) {
+                            int amt = Math.min(stack.getAmount(), left);
+                            ItemStack leftover = stack.clone();
+                            leftover.setAmount(amt);
+                            leftovers.add(leftover);
+                            left -= amt;
+                        }
+                    }
                 }
             }
         }
-        
+        // Add leftovers at the end if not allowing partial stacks
+        if (!allowPartialStacks) {
+            result.addAll(leftovers);
+        }
         return result;
     }
     

@@ -22,6 +22,11 @@ features:
   
   # Show magical messages when sorting
   show-messages: true
+  
+  # Allow sorting of partial stacks in chests (set false to only sort full stacks)
+  allow-partial-stacks-chest: true
+  # Allow sorting of partial stacks in player inventory (set false to only sort full stacks)
+  allow-partial-stacks-inventory: true
 
 # Hotbar sorting priorities (optimized for PvP/survival wizardry)
 hotbar-priorities:
