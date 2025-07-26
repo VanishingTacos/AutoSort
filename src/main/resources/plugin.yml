@@ -1,5 +1,5 @@
 name: InventoryWizard
-version: 1.0.1
+version: 1.0.2
 main: com.inventorywizard.InventoryWizardPlugin
 api-version: "1.21"
 description: Magically sort chests and inventories with intuitive clicks

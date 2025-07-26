@@ -4,6 +4,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class InventoryWizardPlugin extends JavaPlugin {
     
+    public static boolean allowPartialStacksChest = true;
+    public static boolean allowPartialStacksInventory = true;
+    
     @Override
     public void onEnable() {
         // Register event listener
@@ -16,6 +19,10 @@ public class InventoryWizardPlugin extends JavaPlugin {
         
         // Save default config
         saveDefaultConfig();
+        
+        // Load config options
+        allowPartialStacksChest = getConfig().getBoolean("features.allow-partial-stacks-chest", true);
+        allowPartialStacksInventory = getConfig().getBoolean("features.allow-partial-stacks-inventory", true);
         
         getLogger().info("InventoryWizard has awakened! ✨");
         getLogger().info("Commands: /iwiz [hotbar|inventory|all]");
