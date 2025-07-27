@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 
 public class SortCommand implements CommandExecutor, TabCompleter {
     
+    private final InventoryWizardPlugin plugin;
+    
     public SortCommand(InventoryWizardPlugin plugin) {
+        this.plugin = plugin;
     }
     
     @Override
@@ -63,6 +66,18 @@ public class SortCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage("§b🧙‍♂️ Complete inventory transformation complete!");
                 break;
                 
+            case "db":
+                if (!player.hasPermission("inventorywizard.admin")) {
+                    player.sendMessage("§c🧙‍♂️ You need admin permissions to view database information!");
+                    return true;
+                }
+                int playerCount = plugin.getPlayerPreferences().getPlayerCount();
+                player.sendMessage("§6🗄️ Database Statistics:");
+                player.sendMessage("§eTotal players with preferences: §f" + playerCount);
+                player.sendMessage("§eH2 Console: §fhttp://localhost:8082");
+                player.sendMessage("§eDatabase file: §fplugins/InventoryWizard/player_preferences.mv.db");
+                break;
+                
             default:
                 player.sendMessage("§e🧙‍♂️ InventoryWizard Usage: §f/iwiz [hotbar|inventory|all]");
                 player.sendMessage("§7Cast your sorting spells with: hotbar, inventory, or all");
@@ -75,8 +90,14 @@ public class SortCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("hotbar", "inventory", "all")
-                    .stream()
+            List<String> options = Arrays.asList("hotbar", "inventory", "all");
+            
+            // Add db command for admins
+            if (sender.hasPermission("inventorywizard.admin")) {
+                options = Arrays.asList("hotbar", "inventory", "all", "db");
+            }
+            
+            return options.stream()
                     .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
         }

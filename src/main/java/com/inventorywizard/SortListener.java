@@ -11,7 +11,12 @@ import org.bukkit.inventory.Inventory;
 
 public class SortListener implements Listener {
     
+    private final InventoryWizardPlugin plugin;
+    private final PlayerSortPreferences preferences;
+    
     public SortListener(InventoryWizardPlugin plugin) {
+        this.plugin = plugin;
+        this.preferences = plugin.getPlayerPreferences();
     }
     
     @EventHandler
@@ -37,18 +42,28 @@ public class SortListener implements Listener {
                 
                 event.setCancelled(true);
                 
+                // Special case: Slot 4 (middle hotbar slot) cycles sorting modes
+                if (event.getSlot() == 4) {
+                    PlayerSortPreferences.SortMode newMode = preferences.cyclePlayerSortMode(player);
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.6f);
+                    player.sendMessage("§e🔄 Sorting mode changed to: §6" + newMode.getDisplayName());
+                    return;
+                }
+                
                 // Check for combined sorting permission first
                 if (player.hasPermission("inventorywizard.all")) {
-                    InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
-                    InventorySorter.sortHotbar(player);
+                    PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
+                    InventorySorter.sortPlayerInventory(player, mode);
+                    InventorySorter.sortHotbar(player, mode);
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                    player.sendMessage("§b🧙‍♂️ Complete inventory enchanted by the InventoryWizard!");
+                    player.sendMessage("§b🧙‍♂️ Complete inventory enchanted by the InventoryWizard! (" + mode.getDisplayName() + ")");
                 }
                 // Fall back to hotbar-only sorting
                 else if (player.hasPermission("inventorywizard.hotbar")) {
-                    InventorySorter.sortHotbar(player);
+                    PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
+                    InventorySorter.sortHotbar(player, mode);
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
-                    player.sendMessage("§6✨ Hotbar organized by the InventoryWizard!");
+                    player.sendMessage("§6✨ Hotbar organized by the InventoryWizard! (" + mode.getDisplayName() + ")");
                 }
                 return;
             }
@@ -59,17 +74,22 @@ public class SortListener implements Listener {
             // Check if it's a chest inventory
             if (clickedInventory.getType() == InventoryType.CHEST && 
                 player.hasPermission("inventorywizard.chest")) {
-                InventorySorter.sortInventory(clickedInventory, InventoryWizardPlugin.allowPartialStacksChest);
+                
+                PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
+                InventorySorter.sortInventory(clickedInventory, mode);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
-                player.sendMessage("§a✨ Chest magically sorted!");
+                player.sendMessage("§a✨ Chest magically sorted! (" + mode.getDisplayName() + ")");
+                
             } 
             // Check if it's player inventory (main inventory slots, excluding hotbar)
             else if (clickedInventory.getType() == InventoryType.PLAYER && 
                      event.getSlot() > 8 && event.getSlot() < 36 &&
                      player.hasPermission("inventorywizard.inventory")) {
-                InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
+                
+                PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
+                InventorySorter.sortPlayerInventory(player, mode);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
-                player.sendMessage("§a✨ Inventory organized with wizard magic!");
+                player.sendMessage("§a✨ Inventory organized with wizard magic! (" + mode.getDisplayName() + ")");
             }
         }
         
@@ -87,9 +107,10 @@ public class SortListener implements Listener {
                 event.getSlot() >= 0 && event.getSlot() <= 8) {
                 
                 event.setCancelled(true);
-                InventorySorter.sortHotbar(player);
+                PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
+                InventorySorter.sortHotbar(player, mode);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
-                player.sendMessage("§6✨ Hotbar arranged by wizardry!");
+                player.sendMessage("§6✨ Hotbar arranged by wizardry! (" + mode.getDisplayName() + ")");
             }
         }
         

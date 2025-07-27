@@ -1,8 +1,8 @@
 name: InventoryWizard
-version: 1.0.2
+version: 1.1.0
 main: com.inventorywizard.InventoryWizardPlugin
 api-version: "1.21"
-description: Magically sort chests and inventories with intuitive clicks
+description: Magically sort chests and inventories with H2 database performance and cycling sorting modes
 author: VanishingTacos
 website: https://github.com/VanishingTacos/InventoryWizard
 
@@ -22,6 +22,9 @@ permissions:
   inventorywizard.all:
     description: Allows sorting everything at once
     default: true
+  inventorywizard.admin:
+    description: Allows viewing database information and admin features
+    default: op
 
 commands:
   iwiz:
