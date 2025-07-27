@@ -14,12 +14,14 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 - **Smart categorization** - Items are grouped logically (weapons, tools, food, blocks, etc.)
 - **Hotbar optimization** - Weapons and tools prioritized for PvP/survival gameplay
 - **Stack consolidation** - Automatically combines partial stacks
+- **Configurable partial stack sorting** - Choose whether to sort only full stacks or include partial stacks (see config)
 - **Metadata preservation** - Maintains enchantments, names, and item data
 
 ### 🖱️ **Multiple Control Methods**
 - **Shift+Right Click** - Sort inventories, chests, and hotbar
 - **Double Click** - Alternative hotbar sorting
 - **Commands** - `/iwiz` for programmatic sorting
+- **Shift+Right Click in Hotbar Slot 4** - Cycle through sorting modes
 
 ### 🎒 **Comprehensive Coverage**
 - **Player Inventory** - Organize your main storage
@@ -39,6 +41,11 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 - **Server**: PaperMC, Spigot, or compatible fork
 - **Java**: 17 or higher
 
+### Database
+- **H2 Database**: Embedded, no external setup required
+- **Storage**: `plugins/InventoryWizard/player_preferences.mv.db`
+- **Performance**: Optimized for servers with 1-10,000+ players
+
 ## 🎮 Usage Guide
 
 ### **Control Scheme Overview**
@@ -46,6 +53,7 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 |--------|----------|-------------------|---------|
 | **Shift+Right Click** | Hotbar (slots 0-8) | `inventorywizard.all` | Sort inventory + hotbar |
 | **Shift+Right Click** | Hotbar (slots 0-8) | `inventorywizard.hotbar` | Sort hotbar only |
+| **Shift+Right Click** | Hotbar Slot 4 | `inventorywizard.use` | Cycle sorting modes |
 | **Shift+Right Click** | Main Inventory (slots 9-35) | `inventorywizard.inventory` | Sort main inventory |
 | **Shift+Right Click** | Chest | `inventorywizard.chest` | Sort chest contents |
 | **Double Click** | Hotbar (slots 0-8) | `inventorywizard.hotbar` | Sort hotbar only |
@@ -68,6 +76,13 @@ InventoryWizard is a powerful PaperMC plugin that brings intelligent, one-click 
 ### **Sorting Everything**
 - **Shift+Right Click** in your hotbar (slots 0-8) with `inventorywizard.all` permission
 - Both your inventory and hotbar will be sorted!
+
+### **Cycling Sorting Modes**
+- **Shift+Right Click** in hotbar slot 4 (middle slot) to cycle through sorting modes
+- **Default Mode**: Smart categorization by item type
+- **Alphabetical Mode**: Sort items alphabetically by name
+- **Stack-based Mode**: Group by item type, then sort by stack size (full stacks first)
+- Your preferred mode is saved and remembered for future sorting!
 
 ## 🧙‍♂️ Commands
 
@@ -128,6 +143,11 @@ features:
   inventory-sorting: true
   hotbar-sorting: true
   show-messages: true
+  
+  # Allow sorting of partial stacks in chests (set false to only sort full stacks)
+  allow-partial-stacks-chest: true
+  # Allow sorting of partial stacks in player inventory (set false to only sort full stacks)
+  allow-partial-stacks-inventory: true
 
 # Hotbar sorting priorities (optimized for PvP/survival)
 hotbar-priorities:
@@ -139,9 +159,16 @@ hotbar-priorities:
   other: 999          # Everything else
 ```
 
-## 📋 Sorting Categories
+#### Partial Stack Sorting Behavior
+- `allow-partial-stacks-chest` and `allow-partial-stacks-inventory` control whether partial stacks are included in sorting for chests and player inventory, respectively.
+- **If set to `true`**: All items, including partial stacks, are sorted and consolidated as much as possible.
+- **If set to `false`**: Only full stacks are sorted. Any leftover partial stacks are left unsorted at the end of the inventory or chest.
 
-### **Inventory Sorting Order**
+## 📋 Sorting Modes
+
+### **Default Mode** (Smart Categorization)
+Items are sorted by logical categories:
+
 1. **Stone Types** - Stone, granite, cobblestone, deepslate, etc.
 2. **Earth Types** - Dirt, sand, gravel, clay, concrete, etc.
 3. **Wood Types** - Logs, planks, leaves, saplings
@@ -155,6 +182,12 @@ hotbar-priorities:
 11. **Transportation** - Boats, minecarts, saddles
 12. **Decoration** - Flowers, carpets, banners, etc.
 13. **Miscellaneous** - Everything else
+
+### **Alphabetical Mode**
+Items are sorted alphabetically by their material name (A-Z).
+
+### **Stack-based Mode**
+Items are grouped by type first, then sorted by stack size within each type. Full stacks appear before partial stacks of the same item.
 
 ### **Hotbar Sorting Order** (Optimized for PvP/Survival)
 1. **Weapons** - Combat items for quick access
@@ -193,6 +226,13 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 5. **Submit** a pull request
 
 ## 📜 Changelog
+
+### Version 1.1.0
+- ✨ **New Stack-based Sorting Mode** - Group items by type, then sort by stack size (full stacks first)
+  - 🔄 **Preserved Individual Stacks** - Partial stacks maintain their original sizes without combining
+- 📦 **Alphabetical Material Grouping** - Items grouped alphabetically by material name within stack-based mode
+- 🎯 **Enhanced Sorting Logic** - Improved stack size sorting (largest to smallest within each material type)
+- 🧙‍♂️ **Mode Cycling** - Easily switch between Default, Alphabetical, and Stack-based sorting modes
 
 ### Version 1.0.1
 - 🔧 **Fixed control scheme** - Removed middle click, improved Shift+Right Click logic

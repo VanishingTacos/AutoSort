@@ -11,6 +11,18 @@ import java.util.*;
 public class InventorySorter {
     
     public static void sortInventory(Inventory inventory) {
+        sortInventory(inventory, PlayerSortPreferences.SortMode.DEFAULT, true);
+    }
+    
+    public static void sortInventory(Inventory inventory, PlayerSortPreferences.SortMode mode) {
+        sortInventory(inventory, mode, true);
+    }
+    
+    public static void sortInventory(Inventory inventory, boolean allowPartialStacks) {
+        sortInventory(inventory, PlayerSortPreferences.SortMode.DEFAULT, allowPartialStacks);
+    }
+    
+    public static void sortInventory(Inventory inventory, PlayerSortPreferences.SortMode mode, boolean allowPartialStacks) {
         List<ItemStack> items = new ArrayList<>();
         
         // Collect all items from the inventory
@@ -24,9 +36,20 @@ public class InventorySorter {
         // Clear the inventory
         inventory.clear();
         
-        // Sort and stack items
-        Map<String, List<ItemStack>> groupedItems = groupItems(items);
-        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, false);
+        // Sort and stack items based on mode
+        List<ItemStack> sortedItems;
+        switch (mode) {
+            case ALPHABETICAL:
+                sortedItems = sortAlphabetically(items, allowPartialStacks);
+                break;
+            case STACK_BASED:
+                sortedItems = sortByStacks(items);
+                break;
+            default:
+                Map<String, List<ItemStack>> groupedItems = groupItems(items);
+                sortedItems = stackAndSortByType(groupedItems, false, allowPartialStacks);
+                break;
+        }
         
         // Put items back into inventory
         for (int i = 0; i < sortedItems.size() && i < inventory.getSize(); i++) {
@@ -35,6 +58,18 @@ public class InventorySorter {
     }
     
     public static void sortPlayerInventory(Player player) {
+        sortPlayerInventory(player, PlayerSortPreferences.SortMode.DEFAULT, true);
+    }
+    
+    public static void sortPlayerInventory(Player player, PlayerSortPreferences.SortMode mode) {
+        sortPlayerInventory(player, mode, true);
+    }
+    
+    public static void sortPlayerInventory(Player player, boolean allowPartialStacks) {
+        sortPlayerInventory(player, PlayerSortPreferences.SortMode.DEFAULT, allowPartialStacks);
+    }
+    
+    public static void sortPlayerInventory(Player player, PlayerSortPreferences.SortMode mode, boolean allowPartialStacks) {
         PlayerInventory inventory = player.getInventory();
         List<ItemStack> items = new ArrayList<>();
         
@@ -51,9 +86,20 @@ public class InventorySorter {
             inventory.setItem(i, null);
         }
         
-        // Sort and stack items
-        Map<String, List<ItemStack>> groupedItems = groupItems(items);
-        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, false);
+        // Sort and stack items based on mode
+        List<ItemStack> sortedItems;
+        switch (mode) {
+            case ALPHABETICAL:
+                sortedItems = sortAlphabetically(items, allowPartialStacks);
+                break;
+            case STACK_BASED:
+                sortedItems = sortByStacks(items);
+                break;
+            default:
+                Map<String, List<ItemStack>> groupedItems = groupItems(items);
+                sortedItems = stackAndSortByType(groupedItems, false, allowPartialStacks);
+                break;
+        }
         
         // Put items back into main inventory
         int slot = 9;
@@ -65,6 +111,10 @@ public class InventorySorter {
     }
     
     public static void sortHotbar(Player player) {
+        sortHotbar(player, PlayerSortPreferences.SortMode.DEFAULT);
+    }
+    
+    public static void sortHotbar(Player player, PlayerSortPreferences.SortMode mode) {
         PlayerInventory inventory = player.getInventory();
         List<ItemStack> items = new ArrayList<>();
         
@@ -81,9 +131,21 @@ public class InventorySorter {
             inventory.setItem(i, null);
         }
         
-        // Sort and stack items with hotbar priority
-        Map<String, List<ItemStack>> groupedItems = groupItems(items);
-        List<ItemStack> sortedItems = stackAndSortByType(groupedItems, true);
+        // Sort and stack items based on mode
+        List<ItemStack> sortedItems;
+        switch (mode) {
+            case ALPHABETICAL:
+                sortedItems = sortAlphabetically(items, true); // always allow partial stacks in hotbar
+                break;
+            case STACK_BASED:
+                sortedItems = sortByStacks(items);
+                break;
+            default:
+                // For hotbar, always use hotbar priority even in default mode
+                Map<String, List<ItemStack>> groupedItems = groupItems(items);
+                sortedItems = stackAndSortByType(groupedItems, true, true); // always allow partial stacks in hotbar
+                break;
+        }
         
         // Put items back into hotbar
         for (int i = 0; i < Math.min(sortedItems.size(), 9); i++) {
@@ -117,7 +179,7 @@ public class InventorySorter {
         return key.toString();
     }
     
-    private static List<ItemStack> stackAndSortByType(Map<String, List<ItemStack>> groupedItems, boolean isHotbar) {
+    private static List<ItemStack> stackAndSortByType(Map<String, List<ItemStack>> groupedItems, boolean isHotbar, boolean allowPartialStacks) {
         List<ItemStack> result = new ArrayList<>();
         
         // Create a list of item templates for sorting
@@ -160,8 +222,8 @@ public class InventorySorter {
                     totalAmount -= maxStackSize;
                 }
                 
-                // Create remaining stack
-                if (totalAmount > 0) {
+                // Create remaining stack (only if allowPartialStacks is true)
+                if (totalAmount > 0 && allowPartialStacks) {
                     ItemStack remainingStack = template.clone();
                     remainingStack.setAmount(totalAmount);
                     result.add(remainingStack);
@@ -325,4 +387,92 @@ public class InventorySorter {
                name.contains("TULIP") || name.contains("TORCH") || name.contains("LANTERN") ||
                name.contains("CANDLE") || name.contains("HEAD") || name.contains("SKULL");
     }
+    
+    // Alphabetical sorting method
+    private static List<ItemStack> sortAlphabetically(List<ItemStack> items, boolean allowPartialStacks) {
+        Map<String, List<ItemStack>> groupedItems = groupItems(items);
+        List<ItemStack> result = new ArrayList<>();
+        
+        // Create a list of item templates for sorting
+        List<ItemStack> templates = new ArrayList<>();
+        for (List<ItemStack> itemGroup : groupedItems.values()) {
+            if (!itemGroup.isEmpty()) {
+                templates.add(itemGroup.get(0));
+            }
+        }
+        
+        // Sort templates alphabetically by material name
+        templates.sort((item1, item2) -> 
+            item1.getType().name().compareToIgnoreCase(item2.getType().name()));
+        
+        // Process each sorted template
+        for (ItemStack template : templates) {
+            String key = createItemKey(template);
+            List<ItemStack> itemGroup = groupedItems.get(key);
+            
+            // Calculate total amount
+            int totalAmount = itemGroup.stream().mapToInt(ItemStack::getAmount).sum();
+            
+            if (totalAmount > 0) {
+                int maxStackSize = template.getMaxStackSize();
+                
+                // Create full stacks
+                while (totalAmount > maxStackSize) {
+                    ItemStack fullStack = template.clone();
+                    fullStack.setAmount(maxStackSize);
+                    result.add(fullStack);
+                    totalAmount -= maxStackSize;
+                }
+                
+                // Create remaining stack (only if allowPartialStacks is true)
+                if (totalAmount > 0 && allowPartialStacks) {
+                    ItemStack remainingStack = template.clone();
+                    remainingStack.setAmount(totalAmount);
+                    result.add(remainingStack);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    // Stack-based sorting method - groups by item type, then by stack size
+    private static List<ItemStack> sortByStacks(List<ItemStack> items) {
+        Map<String, List<ItemStack>> groupedItems = groupItems(items);
+        List<ItemStack> result = new ArrayList<>();
+        
+        // Create a list of item templates for sorting
+        List<ItemStack> templates = new ArrayList<>();
+        for (List<ItemStack> itemGroup : groupedItems.values()) {
+            if (!itemGroup.isEmpty()) {
+                templates.add(itemGroup.get(0));
+            }
+        }
+        
+        // Sort templates alphabetically by material name (to group by item type)
+        templates.sort((item1, item2) -> 
+            item1.getType().name().compareToIgnoreCase(item2.getType().name()));
+        
+        // Process each sorted template
+        for (ItemStack template : templates) {
+            String key = createItemKey(template);
+            List<ItemStack> itemGroup = groupedItems.get(key);
+            
+            // Sort individual stacks by size (largest first)
+            List<ItemStack> sortedStacks = new ArrayList<>();
+            for (ItemStack item : itemGroup) {
+                sortedStacks.add(item.clone());
+            }
+            
+            // Sort stacks by amount (largest to smallest)
+            sortedStacks.sort((stack1, stack2) -> Integer.compare(stack2.getAmount(), stack1.getAmount()));
+            
+            // Add all stacks to result (preserving individual stack sizes)
+            result.addAll(sortedStacks);
+        }
+        
+        return result;
+    }
+    
+
 }
