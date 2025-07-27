@@ -227,6 +227,13 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 
 ## 📜 Changelog
 
+### Version 1.1.0
+- ✨ **New Stack-based Sorting Mode** - Group items by type, then sort by stack size (full stacks first)
+  - 🔄 **Preserved Individual Stacks** - Partial stacks maintain their original sizes without combining
+- 📦 **Alphabetical Material Grouping** - Items grouped alphabetically by material name within stack-based mode
+- 🎯 **Enhanced Sorting Logic** - Improved stack size sorting (largest to smallest within each material type)
+- 🧙‍♂️ **Mode Cycling** - Easily switch between Default, Alphabetical, and Stack-based sorting modes
+
 ### Version 1.0.1
 - 🔧 **Fixed control scheme** - Removed middle click, improved Shift+Right Click logic
 - 🎯 **Enhanced hotbar sorting** - Priority-based permission system for combined sorting

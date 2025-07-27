@@ -389,10 +389,6 @@ public class InventorySorter {
     }
     
     // Alphabetical sorting method
-    private static List<ItemStack> sortAlphabetically(List<ItemStack> items) {
-        return sortAlphabetically(items, true);
-    }
-    
     private static List<ItemStack> sortAlphabetically(List<ItemStack> items, boolean allowPartialStacks) {
         Map<String, List<ItemStack>> groupedItems = groupItems(items);
         List<ItemStack> result = new ArrayList<>();

@@ -5,7 +5,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.sql.*;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class H2DatabaseManager {
@@ -165,13 +164,5 @@ public class H2DatabaseManager {
         
         return 0;
     }
-    
-    // Method to migrate from YAML if needed
-    public void migrateFromYaml(PlayerSortPreferences yamlPreferences) {
-        plugin.getLogger().info("Starting migration from YAML to H2...");
-        
-        // This would be implemented if we want to migrate existing YAML data
-        // For now, we'll start fresh with H2
-        plugin.getLogger().info("H2 database ready for new data!");
-    }
+
 } 

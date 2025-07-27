@@ -22,7 +22,7 @@ public class SortCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c🧙‍♂️ The InventoryWizard's magic only works for players!");
+            sender.sendMessage("§c🧙✨ The InventoryWizard's magic only works for players!");
             return true;
         }
         
@@ -35,51 +35,54 @@ public class SortCommand implements CommandExecutor, TabCompleter {
             case "hotbar":
             case "hb":
                 if (!player.hasPermission("inventorywizard.hotbar")) {
-                    player.sendMessage("§c🧙‍♂️ You lack the magical permission to organize your hotbar!");
+                    player.sendMessage("§c🧙✨You lack the magical permission to organize your hotbar!");
                     return true;
                 }
-                InventorySorter.sortHotbar(player);
+                PlayerSortPreferences.SortMode mode = plugin.getPlayerPreferences().getPlayerSortMode(player);
+                InventorySorter.sortHotbar(player, mode);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
-                player.sendMessage("§6✨ Hotbar enchanted by the InventoryWizard!");
+                player.sendMessage("§6✨ Hotbar enchanted by the InventoryWizard! (" + mode.getDisplayName() + ")");
                 break;
                 
             case "inventory":
             case "inv":
                 if (!player.hasPermission("inventorywizard.inventory")) {
-                    player.sendMessage("§c🧙‍♂️ Your magical privileges are insufficient for inventory sorting!");
+                    player.sendMessage("§c🧙✨ Your magical privileges are insufficient for inventory sorting!");
                     return true;
                 }
-                InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
+                PlayerSortPreferences.SortMode invMode = plugin.getPlayerPreferences().getPlayerSortMode(player);
+                InventorySorter.sortPlayerInventory(player, invMode);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
-                player.sendMessage("§a✨ Inventory magically organized!");
+                player.sendMessage("§a✨ Inventory magically organized! (" + invMode.getDisplayName() + ")");
                 break;
                 
             case "all":
             case "both":
                 if (!player.hasPermission("inventorywizard.all")) {
-                    player.sendMessage("§c🧙‍♂️ You need master-level permissions for complete inventory wizardry!");
+                    player.sendMessage("§c🧙✨ You need master-level permissions for complete inventory wizardry!");
                     return true;
                 }
-                InventorySorter.sortPlayerInventory(player, InventoryWizardPlugin.allowPartialStacksInventory);
-                InventorySorter.sortHotbar(player);
+                PlayerSortPreferences.SortMode allMode = plugin.getPlayerPreferences().getPlayerSortMode(player);
+                InventorySorter.sortPlayerInventory(player, allMode);
+                InventorySorter.sortHotbar(player, allMode);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                player.sendMessage("§b🧙‍♂️ Complete inventory transformation complete!");
+                player.sendMessage("§b🧙✨ Complete inventory transformation complete! (" + allMode.getDisplayName() + ")");
                 break;
                 
             case "db":
                 if (!player.hasPermission("inventorywizard.admin")) {
-                    player.sendMessage("§c🧙‍♂️ You need admin permissions to view database information!");
+                    player.sendMessage("§c🧙✨ You need admin permissions to view database information!");
                     return true;
                 }
                 int playerCount = plugin.getPlayerPreferences().getPlayerCount();
-                player.sendMessage("§6🗄️ Database Statistics:");
+                player.sendMessage("§6🗄️✨ Database Statistics:");
                 player.sendMessage("§eTotal players with preferences: §f" + playerCount);
                 player.sendMessage("§eH2 Console: §fhttp://localhost:8082");
                 player.sendMessage("§eDatabase file: §fplugins/InventoryWizard/player_preferences.mv.db");
                 break;
                 
             default:
-                player.sendMessage("§e🧙‍♂️ InventoryWizard Usage: §f/iwiz [hotbar|inventory|all]");
+                player.sendMessage("§e🧙✨ InventoryWizard Usage: §f/iwiz [hotbar|inventory|all]");
                 player.sendMessage("§7Cast your sorting spells with: hotbar, inventory, or all");
                 return true;
         }

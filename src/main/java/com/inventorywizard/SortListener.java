@@ -11,11 +11,9 @@ import org.bukkit.inventory.Inventory;
 
 public class SortListener implements Listener {
     
-    private final InventoryWizardPlugin plugin;
     private final PlayerSortPreferences preferences;
     
     public SortListener(InventoryWizardPlugin plugin) {
-        this.plugin = plugin;
         this.preferences = plugin.getPlayerPreferences();
     }
     
@@ -56,7 +54,7 @@ public class SortListener implements Listener {
                     InventorySorter.sortPlayerInventory(player, mode);
                     InventorySorter.sortHotbar(player, mode);
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                    player.sendMessage("§b🧙‍♂️ Complete inventory enchanted by the InventoryWizard! (" + mode.getDisplayName() + ")");
+                    player.sendMessage("§b🧙✨ Complete inventory enchanted by the InventoryWizard! (" + mode.getDisplayName() + ")");
                 }
                 // Fall back to hotbar-only sorting
                 else if (player.hasPermission("inventorywizard.hotbar")) {

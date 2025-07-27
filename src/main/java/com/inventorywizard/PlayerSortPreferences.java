@@ -40,12 +40,10 @@ public class PlayerSortPreferences {
         }
     }
     
-    private final InventoryWizardPlugin plugin;
     private H2DatabaseManager database;
     private boolean useH2 = true;
     
     public PlayerSortPreferences(InventoryWizardPlugin plugin) {
-        this.plugin = plugin;
         try {
             this.database = new H2DatabaseManager(plugin);
             plugin.getLogger().info("Using H2 database for player preferences.");
