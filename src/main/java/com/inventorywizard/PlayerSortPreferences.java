@@ -82,10 +82,21 @@ public class PlayerSortPreferences {
         }
     }
     
-    public int getPlayerCount() {
-        if (useH2 && database != null) {
-            return database.getPlayerCount();
-        }
-        return 0;
+    /**
+     * Check if the database is using secure credentials
+     */
+    public boolean hasSecureCredentials() {
+        return database != null && database.hasSecureCredentials();
     }
+    
+    /**
+     * Regenerate database credentials for security purposes
+     */
+    public void regenerateCredentials() {
+        if (database != null) {
+            database.regenerateCredentials();
+        }
+    }
+    
+
 } 

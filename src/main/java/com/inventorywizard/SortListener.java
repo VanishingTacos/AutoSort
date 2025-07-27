@@ -12,9 +12,11 @@ import org.bukkit.inventory.Inventory;
 public class SortListener implements Listener {
     
     private final PlayerSortPreferences preferences;
+    private final InventoryWizardPlugin plugin;
     
     public SortListener(InventoryWizardPlugin plugin) {
         this.preferences = plugin.getPlayerPreferences();
+        this.plugin = plugin;
     }
     
     @EventHandler
@@ -48,11 +50,31 @@ public class SortListener implements Listener {
                     return;
                 }
                 
+                // Check rate limiting first
+                if (!plugin.getRateLimiter().canSort(player)) {
+                    long timeRemaining = plugin.getRateLimiter().getTimeUntilNextSort(player);
+                    int sortsUsed = plugin.getRateLimiter().getCurrentSortCount(player);
+                    String rateLimitMessage = ErrorHandler.getRateLimitErrorMessage(timeRemaining, sortsUsed);
+                    player.sendMessage("§c⏰ " + rateLimitMessage);
+                    return;
+                }
+                
+                long startTime = System.currentTimeMillis();
+                
                 // Check for combined sorting permission first
                 if (player.hasPermission("inventorywizard.all")) {
                     PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
                     InventorySorter.sortPlayerInventory(player, mode);
                     InventorySorter.sortHotbar(player, mode);
+                    
+                    // Record the sort operation
+                    plugin.getRateLimiter().recordSort(player);
+                    
+                    // Check if sort took too long
+                    if (plugin.getRateLimiter().isSortTakingTooLong(startTime)) {
+                        plugin.getLogger().warning("Sort operation took too long for player: " + player.getName());
+                    }
+                    
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                     player.sendMessage("§b🧙✨ Complete inventory enchanted by the InventoryWizard! (" + mode.getDisplayName() + ")");
                 }
@@ -60,6 +82,15 @@ public class SortListener implements Listener {
                 else if (player.hasPermission("inventorywizard.hotbar")) {
                     PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
                     InventorySorter.sortHotbar(player, mode);
+                    
+                    // Record the sort operation
+                    plugin.getRateLimiter().recordSort(player);
+                    
+                    // Check if sort took too long
+                    if (plugin.getRateLimiter().isSortTakingTooLong(startTime)) {
+                        plugin.getLogger().warning("Sort operation took too long for player: " + player.getName());
+                    }
+                    
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
                     player.sendMessage("§6✨ Hotbar organized by the InventoryWizard! (" + mode.getDisplayName() + ")");
                 }
@@ -73,8 +104,27 @@ public class SortListener implements Listener {
             if (clickedInventory.getType() == InventoryType.CHEST && 
                 player.hasPermission("inventorywizard.chest")) {
                 
+                // Check rate limiting first
+                if (!plugin.getRateLimiter().canSort(player)) {
+                    long timeRemaining = plugin.getRateLimiter().getTimeUntilNextSort(player);
+                    int sortsUsed = plugin.getRateLimiter().getCurrentSortCount(player);
+                    String rateLimitMessage = ErrorHandler.getRateLimitErrorMessage(timeRemaining, sortsUsed);
+                    player.sendMessage("§c⏰ " + rateLimitMessage);
+                    return;
+                }
+                
+                long startTime = System.currentTimeMillis();
                 PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
                 InventorySorter.sortInventory(clickedInventory, mode);
+                
+                // Record the sort operation
+                plugin.getRateLimiter().recordSort(player);
+                
+                // Check if sort took too long
+                if (plugin.getRateLimiter().isSortTakingTooLong(startTime)) {
+                    plugin.getLogger().warning("Sort operation took too long for player: " + player.getName());
+                }
+                
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
                 player.sendMessage("§a✨ Chest magically sorted! (" + mode.getDisplayName() + ")");
                 
@@ -84,8 +134,27 @@ public class SortListener implements Listener {
                      event.getSlot() > 8 && event.getSlot() < 36 &&
                      player.hasPermission("inventorywizard.inventory")) {
                 
+                // Check rate limiting first
+                if (!plugin.getRateLimiter().canSort(player)) {
+                    long timeRemaining = plugin.getRateLimiter().getTimeUntilNextSort(player);
+                    int sortsUsed = plugin.getRateLimiter().getCurrentSortCount(player);
+                    String rateLimitMessage = ErrorHandler.getRateLimitErrorMessage(timeRemaining, sortsUsed);
+                    player.sendMessage("§c⏰ " + rateLimitMessage);
+                    return;
+                }
+                
+                long startTime = System.currentTimeMillis();
                 PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
                 InventorySorter.sortPlayerInventory(player, mode);
+                
+                // Record the sort operation
+                plugin.getRateLimiter().recordSort(player);
+                
+                // Check if sort took too long
+                if (plugin.getRateLimiter().isSortTakingTooLong(startTime)) {
+                    plugin.getLogger().warning("Sort operation took too long for player: " + player.getName());
+                }
+                
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
                 player.sendMessage("§a✨ Inventory organized with wizard magic! (" + mode.getDisplayName() + ")");
             }
@@ -105,8 +174,28 @@ public class SortListener implements Listener {
                 event.getSlot() >= 0 && event.getSlot() <= 8) {
                 
                 event.setCancelled(true);
+                
+                // Check rate limiting first
+                if (!plugin.getRateLimiter().canSort(player)) {
+                    long timeRemaining = plugin.getRateLimiter().getTimeUntilNextSort(player);
+                    int sortsUsed = plugin.getRateLimiter().getCurrentSortCount(player);
+                    String rateLimitMessage = ErrorHandler.getRateLimitErrorMessage(timeRemaining, sortsUsed);
+                    player.sendMessage("§c⏰ " + rateLimitMessage);
+                    return;
+                }
+                
+                long startTime = System.currentTimeMillis();
                 PlayerSortPreferences.SortMode mode = preferences.getPlayerSortMode(player);
                 InventorySorter.sortHotbar(player, mode);
+                
+                // Record the sort operation
+                plugin.getRateLimiter().recordSort(player);
+                
+                // Check if sort took too long
+                if (plugin.getRateLimiter().isSortTakingTooLong(startTime)) {
+                    plugin.getLogger().warning("Sort operation took too long for player: " + player.getName());
+                }
+                
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.4f);
                 player.sendMessage("§6✨ Hotbar arranged by wizardry! (" + mode.getDisplayName() + ")");
             }

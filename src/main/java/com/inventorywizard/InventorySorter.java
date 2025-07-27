@@ -236,8 +236,6 @@ public class InventorySorter {
     
     // Hotbar-specific priority (optimized for PvP/survival)
     private static int getHotbarPriority(Material material) {
-        String name = material.name();
-        
         // 1. Weapons (highest priority)
         if (isWeaponType(material)) return 100;
         

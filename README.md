@@ -227,6 +227,13 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 
 ## 📜 Changelog
 
+# Version 1.1.1
+- 🛡️ **Rate Limiting Added** - Prevents excessive sorting to avoid server lag and abuse (configurable per player)
+- 🗃️ **H2 Database** - Improved performance and secuirty for inventory data storage
+- 🐛 **Bug Fixes** - Fixed rare issues with inventory sync and sorting edge cases
+- 📚 **Documentation Improvements** - Expanded README and in-game help for new features
+
+
 ### Version 1.1.0
 - ✨ **New Stack-based Sorting Mode** - Group items by type, then sort by stack size (full stacks first)
   - 🔄 **Preserved Individual Stacks** - Partial stacks maintain their original sizes without combining
